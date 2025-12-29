@@ -1,0 +1,15 @@
+# Virtual environment
+venv/
+.env/
+
+# Python cache
+__pycache__/
+*.pyc
+
+# ML artifacts (optional, recommended)
+ml/mode_model.pkl
+ml/label_encoder.pkl
+
+# Logs / DB (optional)
+data/logs.txt
+data/trust.db

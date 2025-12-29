@@ -1,0 +1,11 @@
+FEATURE DESCRIPTION
+
+app_switches       : Number of application/window switches
+idle_time          : Total inactive time (seconds)
+keyboard_events    : Number of keyboard inputs
+mouse_events       : Mouse interactions count
+session_duration   : Active usage duration (seconds)
+
+LABEL
+NORMAL : Casual or distracted usage
+FOCUS  : Sustained, goal-oriented activity
