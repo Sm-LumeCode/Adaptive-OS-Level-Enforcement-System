@@ -1,7 +1,8 @@
 import tkinter as tk
-from data import config
 import threading
+from data import config
 
+# ------------------ COLORS ------------------
 BG_COLOR = "#1e1e2e"
 TEXT_COLOR = "#f8f8f2"
 
@@ -9,24 +10,23 @@ BTN_NORMAL = "#89b4fa"
 BTN_FOCUS = "#a6e3a1"
 BTN_EXAM = "#f38ba8"
 BTN_EXIT = "#e64553"
+BTN_STAY = "#fab387"
 
-BTN_HOVER_DARKEN = 0.90
+BTN_HOVER_DARKEN = 0.9
 
 
+# ------------------ HELPERS ------------------
 def darken(hex_color, factor=0.9):
+    """Darken button color on hover"""
     hex_color = hex_color.lstrip("#")
     r = int(hex_color[0:2], 16)
     g = int(hex_color[2:4], 16)
     b = int(hex_color[4:6], 16)
-
-    r = int(r * factor)
-    g = int(g * factor)
-    b = int(b * factor)
-
-    return f"#{r:02x}{g:02x}{b:02x}"
+    return f"#{int(r*factor):02x}{int(g*factor):02x}{int(b*factor):02x}"
 
 
 def styled_button(parent, text, color, command):
+    """Creates a styled, hoverable button"""
     btn = tk.Button(
         parent,
         text=text,
@@ -37,21 +37,15 @@ def styled_button(parent, text, color, command):
         height=2,
         command=command
     )
-
-    btn.bind(
-        "<Enter>",
-        lambda e: btn.config(bg=darken(color, BTN_HOVER_DARKEN))
-    )
-    btn.bind(
-        "<Leave>",
-        lambda e: btn.config(bg=color)
-    )
-
+    btn.bind("<Enter>", lambda e: btn.config(bg=darken(color, BTN_HOVER_DARKEN)))
+    btn.bind("<Leave>", lambda e: btn.config(bg=color))
     btn.pack(fill="x", pady=6)
     return btn
 
 
+# ------------------ MODE SELECTION ------------------
 def ask_mode():
+    """Main popup to select initial mode"""
     root = tk.Tk()
     root.title("AdaptiveOS")
     root.geometry("320x260")
@@ -77,7 +71,9 @@ def ask_mode():
     root.mainloop()
 
 
+# ------------------ EXIT MODE BUTTON ------------------
 def show_exit_button():
+    """Small floating exit mode button"""
     def run():
         win = tk.Tk()
         win.title("Exit Mode")
@@ -87,8 +83,67 @@ def show_exit_button():
 
         def exit_mode():
             config.MODE = "exit"
+            win.destroy()
 
         styled_button(win, "EXIT MODE", BTN_EXIT, exit_mode)
+        win.mainloop()
+
+    threading.Thread(target=run, daemon=True).start()
+
+
+# ------------------ ML SUGGESTION POPUP ------------------
+def show_ml_suggestion(reason_text):
+    def run():
+        win = tk.Tk()
+        win.title("Mode Recommendation")
+        win.geometry("420x330")  # 🔧 increased height
+        win.configure(bg=BG_COLOR)
+        win.attributes("-topmost", True)
+
+        def switch_to_focus():
+            config.MODE = "focus"
+            win.destroy()
+
+        def stay_normal():
+            win.destroy()
+
+        # Title
+        tk.Label(
+            win,
+            text="Focus Mode Suggested",
+            font=("Segoe UI", 15, "bold"),
+            bg=BG_COLOR,
+            fg=TEXT_COLOR
+        ).pack(pady=(15, 6))
+
+        # Reason text
+        tk.Label(
+            win,
+            text=reason_text,
+            wraplength=380,
+            justify="center",
+            font=("Segoe UI", 10),
+            bg=BG_COLOR,
+            fg=TEXT_COLOR
+        ).pack(pady=(0, 10))
+
+        # Buttons
+        btn_frame = tk.Frame(win, bg=BG_COLOR)
+        btn_frame.pack(fill="x", padx=20)
+
+        styled_button(
+            btn_frame,
+            "Switch to Focus Mode",
+            BTN_FOCUS,
+            switch_to_focus
+        )
+
+        styled_button(
+            btn_frame,
+            "Stay in Normal Mode",
+            BTN_STAY,
+            stay_normal
+        )
 
         win.mainloop()
 
