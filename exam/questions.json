@@ -1,0 +1,52 @@
+[
+  {
+    "question": "What is a process?",
+    "options": [
+      "Program in execution",
+      "File",
+      "CPU",
+      "Thread"
+    ],
+    "correct": 0
+  },
+  {
+    "question": "Which scheduling algorithm is preemptive?",
+    "options": [
+      "FCFS",
+      "SJF",
+      "Round Robin",
+      "Priority"
+    ],
+    "correct": 2
+  },
+  {
+    "question": "What does RAM stand for?",
+    "options": [
+      "Read Access Memory",
+      "Random Access Memory",
+      "Rapid Application Memory",
+      "Run Application Mode"
+    ],
+    "correct": 1
+  },
+  {
+    "question": "Which of the following is a deadlock prevention technique?",
+    "options": [
+      "Banker's Algorithm",
+      "Resource Allocation Graph",
+      "Hold and Wait elimination",
+      "Wait-Die scheme"
+    ],
+    "correct": 2
+  },
+  {
+    "question": "What is the main purpose of virtual memory?",
+    "options": [
+      "Increase CPU speed",
+      "Allow execution of programs larger than physical memory",
+      "Reduce power consumption",
+      "Improve network speed"
+    ],
+    "correct": 1
+  }
+]

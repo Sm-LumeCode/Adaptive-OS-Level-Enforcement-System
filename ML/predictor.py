@@ -39,3 +39,4 @@ def suggest_mode(activity):
         return "focus", reason
 
     return "normal", "No strong focus pattern detected."
+

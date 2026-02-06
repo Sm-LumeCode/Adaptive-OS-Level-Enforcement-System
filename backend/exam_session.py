@@ -1,16 +1,11 @@
-import os
 import subprocess
 import time
 from data import config
 from ui.popup import ask_mode, show_exit_button, show_ml_suggestion
 
-# ---------------- STATE ----------------
-exam_started = False
-
 TERMINAL_KEYWORDS = ["terminal", "bash", "vboxuser@", "gnome-terminal"]
 DESKTOP_IGNORE = ["desktop", "desktop icons"]
 EXIT_POPUP_ALLOW = ["exit mode", "mode recommendation"]
-EXAM_WINDOW_KEYWORDS = ["exam mode"]
 
 # --- Normal-mode ML logic state ---
 last_window_title = None
@@ -23,7 +18,6 @@ SWITCH_THRESHOLD = 6           # frequent switching
 CHECK_INTERVAL = 0.3
 
 
-# ---------------- HELPERS ----------------
 def run(cmd):
     return subprocess.check_output(
         cmd, stderr=subprocess.DEVNULL
@@ -73,20 +67,7 @@ def is_exit_popup(title):
     return any(k in title.lower() for k in EXIT_POPUP_ALLOW)
 
 
-def is_exam_window(title):
-    return any(k in title.lower() for k in EXAM_WINDOW_KEYWORDS)
-
-
-def is_whitelisted(title):
-    return any(w.lower() in title.lower() for w in config.WHITELIST)
-
-
-# 🔑 FILE-BASED IPC CHECK
-def exam_finished():
-    return os.path.exists("exam/exam_done.flag")
-
-
-# ---------------- START ----------------
+# ---- START ----
 ask_mode()
 show_exit_button()
 
@@ -94,46 +75,26 @@ while True:
     wid, title = get_active_window()
     windows = get_all_windows()
 
-    # 🔴 EXIT MODE (show mode selection again)
+    # 🔴 EXIT MODE (highest priority)
     if config.MODE == "exit":
         ml_suggested = False
         switch_count = 0
         last_window_title = None
         same_window_start = None
-        exam_started = False
-
         ask_mode()
         show_exit_button()
         time.sleep(CHECK_INTERVAL)
         continue
 
-    # 🔴 EXAM MODE — STRICT LOCKDOWN
+    # 🔴 EXAM MODE — AUTO CLOSE EVERYTHING
     if config.MODE == "exam":
-
-        # 🚀 Launch exam app only once
-        if not exam_started:
-            print("EXAM MODE: Launching exam application")
-            os.system("python3 exam/exam_app.py &")
-            exam_started = True
-
-        # ✅ CHECK IF EXAM FINISHED (SIGNAL FROM EXAM APP)
-        if exam_finished():
-            os.remove("exam/exam_done.flag")
-            config.MODE = "exit"
-            continue
-
         for w_id, w_title in windows:
-
-            # ✅ allowed windows
             if is_desktop_window(w_title):
+                continue
+            if is_exit_popup(w_title):
                 continue
             if is_terminal(w_title):
                 continue
-            if is_exam_window(w_title):
-                continue
-            if is_whitelisted(w_title):
-                continue
-
             print("EXAM MODE: Closing ->", w_title)
             close_window(w_id)
 
