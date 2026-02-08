@@ -1,10 +1,8 @@
 import os
 import subprocess
 import time
-from ML.predictor import suggest_mode
 from data import config
 from ui.popup import ask_mode, show_exit_button, show_ml_suggestion
-import sys
 
 # ---------------- STATE ----------------
 exam_started = False
@@ -14,21 +12,15 @@ DESKTOP_IGNORE = ["desktop", "desktop icons"]
 EXIT_POPUP_ALLOW = ["exit mode", "mode recommendation"]
 EXAM_WINDOW_KEYWORDS = ["exam mode"]
 
-# Normal-mode ML logic state
+# --- Normal-mode behavior state ---
 last_window_title = None
 same_window_start = None
+switch_count = 0
 ml_suggested = False
 
-FOCUS_TIME_THRESHOLD = 10      # seconds
+FOCUS_TIME_THRESHOLD = 10      # seconds (demo-friendly)
+SWITCH_THRESHOLD = 6           # frequent switching
 CHECK_INTERVAL = 0.3
-
-# Activity metrics
-app_switches = 0
-idle_time = 0
-keyboard_events = 0
-mouse_events = 0
-
-session_start = time.time()
 
 
 # ---------------- HELPERS ----------------
@@ -77,6 +69,10 @@ def is_desktop_window(title):
     return any(d in title.lower() for d in DESKTOP_IGNORE)
 
 
+def is_exit_popup(title):
+    return any(k in title.lower() for k in EXIT_POPUP_ALLOW)
+
+
 def is_exam_window(title):
     return any(k in title.lower() for k in EXAM_WINDOW_KEYWORDS)
 
@@ -85,6 +81,7 @@ def is_whitelisted(title):
     return any(w.lower() in title.lower() for w in config.WHITELIST)
 
 
+# 🔑 FILE-BASED IPC CHECK
 def exam_finished():
     return os.path.exists("exam/exam_done.flag")
 
@@ -93,24 +90,21 @@ def exam_finished():
 ask_mode()
 show_exit_button()
 
-
-# Exit program function (if user chooses EXIT in popup)
-def exit_program():
-    sys.exit(0)
-
-
-# ---------------- MAIN LOOP ----------------
 while True:
     wid, title = get_active_window()
     windows = get_all_windows()
-    now = time.time()
 
-    # ---------------- EXIT MODE ----------------
+    # 🔴 SHUTDOWN MODE — EXIT PROGRAM COMPLETELY
+    if config.MODE == "shutdown":
+        print("AdaptiveOS shutting down...")
+        os._exit(0)
+
+    # 🔴 EXIT MODE (return to mode selection)
     if config.MODE == "exit":
         ml_suggested = False
+        switch_count = 0
         last_window_title = None
         same_window_start = None
-        session_start = now
         exam_started = False
 
         ask_mode()
@@ -118,88 +112,80 @@ while True:
         time.sleep(CHECK_INTERVAL)
         continue
 
-    # ---------------- EXAM MODE ----------------
+    # 🔴 EXAM MODE — STRICT LOCKDOWN
     if config.MODE == "exam":
+
+        # 🚀 Launch exam app only once
         if not exam_started:
+            print("EXAM MODE: Launching exam application")
             os.system("python3 exam/exam_app.py &")
             exam_started = True
 
+        # ✅ Check if exam finished
         if exam_finished():
             os.remove("exam/exam_done.flag")
             config.MODE = "exit"
             continue
 
         for w_id, w_title in windows:
-            if (
-                is_desktop_window(w_title)
-                or is_terminal(w_title)
-                or is_exam_window(w_title)
-                or is_whitelisted(w_title)
-            ):
+
+            # ✅ Allowed windows
+            if is_desktop_window(w_title):
                 continue
+            if is_terminal(w_title):
+                continue
+            if is_exam_window(w_title):
+                continue
+            if is_whitelisted(w_title):
+                continue
+
+            print("EXAM MODE: Closing ->", w_title)
             close_window(w_id)
 
         time.sleep(CHECK_INTERVAL)
         continue
 
-    # ---------------- FOCUS MODE ----------------
+    # 🟡 FOCUS MODE — AUTO CLOSE BLACKLISTED
     if config.MODE == "focus":
         for w_id, w_title in windows:
             if is_desktop_window(w_title):
                 continue
             if is_blacklisted(w_title):
+                print("FOCUS MODE: Closing ->", w_title)
                 close_window(w_id)
+
         time.sleep(CHECK_INTERVAL)
         continue
 
-    # ---------------- NORMAL MODE (ML LOGIC) ----------------
-    if not title or is_desktop_window(title):
-        time.sleep(CHECK_INTERVAL)
-        continue
+    # 🔵 NORMAL MODE (BEHAVIOR-BASED SUGGESTION)
+    if title and not is_desktop_window(title):
 
-    # Track window focus
-    if title != last_window_title:
-        app_switches += 1
-        last_window_title = title
-        same_window_start = now
-        ml_suggested = False  # reset on window change
+        if title != last_window_title:
+            switch_count += 1
+            last_window_title = title
+            same_window_start = time.time()
 
-    focused_duration = now - same_window_start
-    session_duration = now - session_start
+        # 🔴 Case-1: Distracted
+        if not ml_suggested and switch_count >= SWITCH_THRESHOLD:
+            reason = (
+                "You have been switching between applications frequently.\n\n"
+                "This behavior indicates possible distraction.\n\n"
+                "Focus Mode can help limit distractions."
+            )
+            show_ml_suggestion(reason)
+            ml_suggested = True
 
-    # ⛔ Skip suggestions before focus threshold
-    if focused_duration < FOCUS_TIME_THRESHOLD:
-        time.sleep(CHECK_INTERVAL)
-        continue
-
-    # ⛔ Prevent repeated suggestions
-    if ml_suggested:
-        time.sleep(CHECK_INTERVAL)
-        continue
-
-    # ---------------- COLLECT ACTIVITY FOR ML ----------------
-    activity = {
-        "app_switches": app_switches,
-        "idle_time": idle_time,
-        "keyboard_events": keyboard_events,
-        "mouse_events": mouse_events,
-        "session_duration": session_duration
-    }
-
-    # Get ML suggestion
-    result = suggest_mode(activity)
-    mode = result.get("mode", "focus")
-    confidence = result.get("confidence", 60)
-    reason = result.get("reason", "Focused on same app")
-
-    # Show suggestion if confidence ≥ 60
-    if confidence >= 60:
-        message = (
-            f"🔮 Recommended Mode: {mode}\n"
-            f"Confidence: {confidence}%\n\n"
-            f"{reason}"
-        )
-        show_ml_suggestion(message)
-        ml_suggested = True
+        # 🔵 Case-2: Focused
+        elif not ml_suggested and same_window_start:
+            elapsed = time.time() - same_window_start
+            if elapsed >= FOCUS_TIME_THRESHOLD:
+                reason = (
+                    "You have been working continuously on the same application.\n\n"
+                    "To maintain this focus and avoid distractions,\n"
+                    "Focus Mode is recommended."
+                )
+                show_ml_suggestion(reason)
+                ml_suggested = True
 
     time.sleep(CHECK_INTERVAL)
+

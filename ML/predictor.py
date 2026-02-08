@@ -7,38 +7,36 @@ BASE_DIR = os.path.dirname(os.path.abspath(__file__))
 model = joblib.load(os.path.join(BASE_DIR, "mode_model.pkl"))
 encoder = joblib.load(os.path.join(BASE_DIR, "label_encoder.pkl"))
 
+FEATURE_ORDER = [
+    "session_duration",
+    "app_switches",
+    "idle_time",
+    "keyboard_events",
+    "mouse_events"
+]
+
 def suggest_mode(activity):
     """
     Returns:
-        {
-            "mode": "FOCUS" | "NORMAL",
-            "confidence": int,
-            "reason": str
-        }
+        (suggested_mode, reason)
     """
 
-    features = pd.DataFrame([activity])
+    # 🔴 Read exact feature order from trained model
+    feature_names = model.feature_names_in_
 
-    # Predict probabilities
-    probs = model.predict_proba(features)[0]
-    pred_idx = probs.argmax()
+    # Build data strictly in that order
+    data = [[activity[name] for name in feature_names]]
 
-    mode = encoder.inverse_transform([pred_idx])[0]
-    confidence = int(probs[pred_idx] * 100)
+    features = pd.DataFrame(data, columns=feature_names)
 
-    if mode == "FOCUS":
+    prediction = model.predict(features)[0]
+
+    if prediction == "focus":
         reason = (
-            "High sustained interaction, long session duration, "
-            "and minimal application switching indicate focused behavior."
+            "Sustained session activity with minimal application switching "
+            "and consistent user interaction indicates focused behavior."
         )
-    else:
-        reason = (
-            "Frequent application switching and lower engagement "
-            "suggest distracted or casual usage."
-        )
+        return "focus", reason
 
-    return {
-        "mode": mode,
-        "confidence": confidence,
-        "reason": reason
-    }
+    return "normal", "No strong focus pattern detected."
+

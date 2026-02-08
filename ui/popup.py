@@ -1,7 +1,7 @@
 import tkinter as tk
 import threading
-from data import config
 import sys
+from data import config
 
 # ------------------ COLORS ------------------
 BG_COLOR = "#1e1e2e"
@@ -14,7 +14,7 @@ BTN_EXIT = "#e64553"
 BTN_STAY = "#fab387"
 
 BTN_HOVER_DARKEN = 0.9
-BTN_WIDTH = 28   # ✅ fixed width for equal size buttons
+
 
 # ------------------ HELPERS ------------------
 def darken(hex_color, factor=0.9):
@@ -34,7 +34,6 @@ def styled_button(parent, text, color, command):
         font=("Segoe UI", 11, "bold"),
         relief="flat",
         height=2,
-        width=BTN_WIDTH,     # ✅ key fix
         command=command
     )
     btn.bind("<Enter>", lambda e: btn.config(bg=darken(color, BTN_HOVER_DARKEN)))
@@ -47,12 +46,16 @@ def styled_button(parent, text, color, command):
 def ask_mode():
     root = tk.Tk()
     root.title("AdaptiveOS")
-    root.geometry("620x420")
+    root.geometry("320x320")
     root.configure(bg=BG_COLOR)
     root.attributes("-topmost", True)
 
     def set_mode(mode):
         config.MODE = mode
+        root.destroy()
+
+    def shutdown():
+        config.MODE = "shutdown"
         root.destroy()
 
     tk.Label(
@@ -63,15 +66,11 @@ def ask_mode():
         fg=TEXT_COLOR
     ).pack(pady=14)
 
-    def exit_program():
-        root.quit()
-        root.destroy()
-        sys.exit(0)
-
     styled_button(root, "Normal Mode", BTN_NORMAL, lambda: set_mode("normal"))
     styled_button(root, "Focus Mode", BTN_FOCUS, lambda: set_mode("focus"))
     styled_button(root, "Exam Mode", BTN_EXAM, lambda: set_mode("exam"))
-    styled_button(root, "EXIT", BTN_EXIT, exit_program)
+    styled_button(root, "EXIT", BTN_EXIT, shutdown)
+
     root.mainloop()
 
 
@@ -99,7 +98,7 @@ def show_ml_suggestion(reason_text):
     def run():
         win = tk.Tk()
         win.title("Mode Recommendation")
-        win.geometry("520x420")
+        win.geometry("420x330")
         win.configure(bg=BG_COLOR)
         win.attributes("-topmost", True)
 
@@ -131,20 +130,10 @@ def show_ml_suggestion(reason_text):
         btn_frame = tk.Frame(win, bg=BG_COLOR)
         btn_frame.pack(fill="x", padx=20)
 
-        styled_button(
-            btn_frame,
-            "Switch to Focus Mode",
-            BTN_FOCUS,
-            switch_to_focus
-        )
-
-        styled_button(
-            btn_frame,
-            "Stay in Normal Mode",
-            BTN_STAY,
-            stay_normal
-        )
+        styled_button(btn_frame, "Switch to Focus Mode", BTN_FOCUS, switch_to_focus)
+        styled_button(btn_frame, "Stay in Normal Mode", BTN_STAY, stay_normal)
 
         win.mainloop()
 
     threading.Thread(target=run, daemon=True).start()
+
