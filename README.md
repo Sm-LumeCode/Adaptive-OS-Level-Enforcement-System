@@ -48,11 +48,18 @@ The system integrates a lightweight Logistic Regression model to recommend suita
 ```text
 AdaptiveOS/
 ├── backend/
-│   └── monitor.py        # Core enforcement logic and window monitoring
+│   └── monitor.py   
+    └── enforcement.py 
+    └── exam_session.py # for controlling during exam mode
+    └── mode_manager.py 
 ├── ui/
 │   └── popup.py          # Tkinter-based UI for mode selection and exit control
 ├── data/
 │   └── config.py         # Mode rules, whitelist, blacklist, ML parameters
+├── ML/
+    └── predictor.py   
+    └── dataset.csv 
+    └── train_model.py
 ├── requirements.txt      # Python dependencies
 ├── main.py               # Entry point of the system
 └── README.md             # Project documentation

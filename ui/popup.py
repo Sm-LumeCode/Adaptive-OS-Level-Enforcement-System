@@ -1,6 +1,7 @@
 import tkinter as tk
 import threading
 from data import config
+import sys
 
 # ------------------ COLORS ------------------
 BG_COLOR = "#1e1e2e"
@@ -13,11 +14,10 @@ BTN_EXIT = "#e64553"
 BTN_STAY = "#fab387"
 
 BTN_HOVER_DARKEN = 0.9
-
+BTN_WIDTH = 28   # ✅ fixed width for equal size buttons
 
 # ------------------ HELPERS ------------------
 def darken(hex_color, factor=0.9):
-    """Darken button color on hover"""
     hex_color = hex_color.lstrip("#")
     r = int(hex_color[0:2], 16)
     g = int(hex_color[2:4], 16)
@@ -26,7 +26,6 @@ def darken(hex_color, factor=0.9):
 
 
 def styled_button(parent, text, color, command):
-    """Creates a styled, hoverable button"""
     btn = tk.Button(
         parent,
         text=text,
@@ -35,6 +34,7 @@ def styled_button(parent, text, color, command):
         font=("Segoe UI", 11, "bold"),
         relief="flat",
         height=2,
+        width=BTN_WIDTH,     # ✅ key fix
         command=command
     )
     btn.bind("<Enter>", lambda e: btn.config(bg=darken(color, BTN_HOVER_DARKEN)))
@@ -45,10 +45,9 @@ def styled_button(parent, text, color, command):
 
 # ------------------ MODE SELECTION ------------------
 def ask_mode():
-    """Main popup to select initial mode"""
     root = tk.Tk()
     root.title("AdaptiveOS")
-    root.geometry("320x260")
+    root.geometry("620x420")
     root.configure(bg=BG_COLOR)
     root.attributes("-topmost", True)
 
@@ -64,16 +63,20 @@ def ask_mode():
         fg=TEXT_COLOR
     ).pack(pady=14)
 
+    def exit_program():
+        root.quit()
+        root.destroy()
+        sys.exit(0)
+
     styled_button(root, "Normal Mode", BTN_NORMAL, lambda: set_mode("normal"))
     styled_button(root, "Focus Mode", BTN_FOCUS, lambda: set_mode("focus"))
     styled_button(root, "Exam Mode", BTN_EXAM, lambda: set_mode("exam"))
-
+    styled_button(root, "EXIT", BTN_EXIT, exit_program)
     root.mainloop()
 
 
 # ------------------ EXIT MODE BUTTON ------------------
 def show_exit_button():
-    """Small floating exit mode button"""
     def run():
         win = tk.Tk()
         win.title("Exit Mode")
@@ -96,7 +99,7 @@ def show_ml_suggestion(reason_text):
     def run():
         win = tk.Tk()
         win.title("Mode Recommendation")
-        win.geometry("420x330")  # 🔧 increased height
+        win.geometry("520x420")
         win.configure(bg=BG_COLOR)
         win.attributes("-topmost", True)
 
@@ -107,7 +110,6 @@ def show_ml_suggestion(reason_text):
         def stay_normal():
             win.destroy()
 
-        # Title
         tk.Label(
             win,
             text="Focus Mode Suggested",
@@ -116,7 +118,6 @@ def show_ml_suggestion(reason_text):
             fg=TEXT_COLOR
         ).pack(pady=(15, 6))
 
-        # Reason text
         tk.Label(
             win,
             text=reason_text,
@@ -127,7 +128,6 @@ def show_ml_suggestion(reason_text):
             fg=TEXT_COLOR
         ).pack(pady=(0, 10))
 
-        # Buttons
         btn_frame = tk.Frame(win, bg=BG_COLOR)
         btn_frame.pack(fill="x", padx=20)
 
@@ -148,6 +148,3 @@ def show_ml_suggestion(reason_text):
         win.mainloop()
 
     threading.Thread(target=run, daemon=True).start()
-
-
-
