@@ -46,7 +46,7 @@ def styled_button(parent, text, color, command):
 def ask_mode():
     root = tk.Tk()
     root.title("AdaptiveOS")
-    root.geometry("320x320")
+    root.geometry("520x480")
     root.configure(bg=BG_COLOR)
     root.attributes("-topmost", True)
 
@@ -98,7 +98,7 @@ def show_ml_suggestion(reason_text):
     def run():
         win = tk.Tk()
         win.title("Mode Recommendation")
-        win.geometry("420x330")
+        win.geometry("520x430")
         win.configure(bg=BG_COLOR)
         win.attributes("-topmost", True)
 
