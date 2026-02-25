@@ -1,81 +1,139 @@
-# Adaptive OS-Level Enforcement System
+# AdaptiveOS  
+An OS-Level Intelligent Focus and Exam Supervision System
 
-## Project Overview
-The Adaptive OS-Level Enforcement System is a Linux-based desktop control system designed to regulate application access based on user-selected operational modes. The system enforces access policies in real time at the operating system level without relying on invasive monitoring techniques such as cameras or microphones.
+## Overview
 
-The project introduces three operational modes—Normal, Focus, and Exam—to support distraction-free work environments and controlled examination scenarios while preserving user privacy.
+AdaptiveOS is a Linux-based operating system–level supervision system designed to provide intelligent focus assistance and secure exam supervision without compromising user privacy. The system introduces multiple operating modes that regulate application usage and window behavior based on context, enabling productivity and integrity in focus-critical and examination environments.
+
+Unlike traditional solutions that rely on invasive techniques such as webcam monitoring or screen recording, AdaptiveOS operates strictly at the window and process control level, ensuring ethical and privacy-preserving supervision.
 
 ## Key Features
-- Mode-based application enforcement (Normal, Focus, Exam)
-- Real-time monitoring of desktop windows
-- Automatic restriction of unauthorized or distracting applications
-- Persistent exit control for seamless mode switching
-- User-space implementation without administrative privileges
-- Privacy-preserving design
-- Modular and extensible architecture
 
-## Operational Modes
-- Normal Mode: Observes system usage without enforcing restrictions.
-- Focus Mode: Automatically blocks predefined distracting applications using blacklist-based enforcement.
-- Exam Mode: Restricts all applications except essential tools such as the terminal, ensuring a controlled environment.
+- Multiple operating modes: Normal, Focus, Exam and Exit
+- OS-level application and window enforcement
+- Intelligent behavior-based focus suggestions
+- Secure full-screen exam supervision
+- Privacy-first design with no intrusive monitoring
+- Lightweight implementation suitable for continuous execution
 
-## Project Structure
-AdaptiveOS/
-├── backend/
-│   └── monitor.py          # Core enforcement logic and window monitoring
-├── ui/
-│   └── popup.py            # Tkinter-based UI for mode selection and exit control
-├── data/
-│   └── config.py           # Configuration for modes, whitelist, and blacklist
-├── requirements.txt        # Python dependencies
-├── main.py                 # Entry point of the system
-└── README.md               # Project documentation
+## Operating Modes
 
-## Tools and Technologies Used
-- Python 3
-- Tkinter
-- wmctrl
-- xdotool
-- Git & GitHub
+### Normal Mode
+- Default operating mode with unrestricted system usage
+- User behavior such as application switching and session duration is observed
+- Intelligent recommendations are generated to suggest switching to Focus Mode when distraction patterns are detected
 
-## Installation and Setup
-Prerequisites:
-- Linux operating system (X11 session required)
-- Python 3 installed
+### Focus Mode
+- Enforces a distraction-free environment
+- Automatically closes blacklisted applications
+- Allows only essential productivity applications
+- Designed to enhance concentration without blocking user control completely
 
-Install required system utilities:
+### Exam Mode
+- Strict supervision mode intended for examinations
+- Launches a full-screen exam application
+- Automatically closes all unauthorized windows
+- Prevents window switching and multitasking
+- Exam session ends only after submission
+
+### Exit Mode
+- Restores system to normal operation
+- Clears enforcement state
+- Allows re-selection of operating modes
+
+## System Architecture
+
+AdaptiveOS operates entirely in user space and consists of the following components:
+
+- **Monitoring Engine:** Continuously observes active windows and system state
+- **Enforcement Layer:** Applies application restrictions based on the selected mode
+- **User Interface Layer:** Provides mode selection, exit controls and suggestions
+- **Exam Application Module:** Handles full-screen exam delivery and submission
+- **Machine Learning Module:** Generates focus recommendations based on user behavior
+
+## Machine Learning-Based Focus Recommendation
+
+AdaptiveOS uses a lightweight machine learning model to analyze behavioral indicators such as:
+
+- Session duration
+- Application switching frequency
+- User interaction patterns
+
+Based on these parameters, the system recommends switching to Focus Mode when sustained focus or distraction is detected. The ML component is advisory and does not enforce mode changes automatically.
+
+## Technologies Used
+
+- **Programming Language:** Python  
+- **Platform:** Linux (Ubuntu)  
+- **UI Framework:** Tkinter  
+- **Window Control:** wmctrl, xdotool  
+- **Machine Learning:** Scikit-learn  
+- **Data Handling:** Pandas  
+- **Model Persistence:** Joblib  
+- **Version Control:** Git  
+
+## Required Dependencies
+
+- Python 3.x  
+- wmctrl  
+- xdotool  
+- tkinter  
+- pandas  
+- scikit-learn  
+- joblib  
+
+Install system tools using:
+```bash
 sudo apt install wmctrl xdotool
 
-Install Python dependencies:
-pip install -r requirements.txt
+Install Python dependencies using:
 
-## How to Run
-python main.py
+```bash
+pip install pandas scikit-learn joblib
+```
 
-Steps:
-1. A mode selection popup appears.
-2. Select Normal, Focus, or Exam mode.
-3. Application access is enforced based on the selected mode.
-4. Use the Exit Mode button to safely switch modes.
+---
 
-## Testing
-The system was tested by launching various applications under different modes to validate enforcement behavior. Restricted applications were consistently blocked while permitted applications continued to function normally. Mode switching and exit functionality were verified for stability.
+## Privacy and Ethics
 
-## Future Enhancements
-- Machine learning–based mode recommendation
-- Intelligent behavior analysis for adaptive enforcement
-- Logging and analytics for usage monitoring
-- System tray integration
-- Support for additional desktop environments
+AdaptiveOS is designed with privacy as a core principle.
+
+- No webcam access  
+- No microphone usage  
+- No screen recording  
+- No keystroke logging  
+- No content-level inspection  
+
+All enforcement is performed strictly at the operating system level using window and process control mechanisms.
+
+---
 
 ## Limitations
-- Designed specifically for Linux systems running X11
-- User-space enforcement only (no kernel-level lockdown)
-- Wayland-based desktops are not supported
 
-## Academic Relevance
-This project demonstrates core operating system concepts including access control, user-space enforcement, process monitoring, and modular system design. It serves as a foundation for further research in intelligent and secure computing environments.
+- Website-level blocking inside browsers is not supported  
+- Machine learning recommendations depend on training data quality  
+- Currently supports Linux desktop environments using X11 window managers  
+
+---
+
+## Future Scope
+
+- Personalized focus thresholds per user  
+- Multiple focus levels such as Focus-Light and Focus-Strict  
+- Wayland window manager support  
+- Enhanced machine learning models for adaptive behavior analysis  
+- Integration with institutional examination platforms  
+- Administrative dashboards and analytics  
+
+---
+
+## Conclusion
+
+AdaptiveOS demonstrates how operating system concepts such as window management and access control can be combined with lightweight machine learning to provide intelligent focus assistance and secure exam supervision. The system offers an ethical, privacy-respecting alternative to conventional proctoring and productivity tools.
+
+---
 
 ## Authors
-Surabhi M  
-Tanisha Bhide
+
+- **Surabhi M**  
+- **Tanisha Bhide**
