@@ -1,139 +1,63 @@
-# AdaptiveOS  
-An OS-Level Intelligent Focus and Exam Supervision System
+# 🖥️ Adaptive OS
 
-## Overview
+Adaptive OS is a dynamic window management and distraction control system designed to enhance productivity and enforce focused work environments. By monitoring active windows and categorizing them into different operating modes, it helps users stay on task or ensures integrity during sensitive tasks like exams.
 
-AdaptiveOS is a Linux-based operating system–level supervision system designed to provide intelligent focus assistance and secure exam supervision without compromising user privacy. The system introduces multiple operating modes that regulate application usage and window behavior based on context, enabling productivity and integrity in focus-critical and examination environments.
+---
 
-Unlike traditional solutions that rely on invasive techniques such as webcam monitoring or screen recording, AdaptiveOS operates strictly at the window and process control level, ensuring ethical and privacy-preserving supervision.
+## 🚀 Key Features
 
-## Key Features
+*   **🎯 Mode-Based Control**: Easily switch between operating modes via a sleek, dark-themed UI.
+*   **🛠️ Real-Time Monitoring**: Automatically detects and manages windows using `wmctrl`.
+*   **⚖️ Balanced Productivity**:
+    *   **Normal Mode**: Standard operation with no restrictions.
+    *   **Focus Mode**: Automatically closes blacklisted distractions (e.g., Settings, App Center, Files).
+    *   **Exam Mode**: High-security mode allowing only Terminals and Text Editors.
+*   **🧩 Simple Integration**: Easy-to-configure whitelist and blacklist for personalized focus.
 
-- Multiple operating modes: Normal, Focus, Exam and Exit
-- OS-level application and window enforcement
-- Intelligent behavior-based focus suggestions
-- Secure full-screen exam supervision
-- Privacy-first design with no intrusive monitoring
-- Lightweight implementation suitable for continuous execution
+---
 
-## Operating Modes
+## 📽️ Demo Video
 
-### Normal Mode
-- Default operating mode with unrestricted system usage
-- User behavior such as application switching and session duration is observed
-- Intelligent recommendations are generated to suggest switching to Focus Mode when distraction patterns are detected
+Experience Adaptive OS in action:
 
-### Focus Mode
-- Enforces a distraction-free environment
-- Automatically closes blacklisted applications
-- Allows only essential productivity applications
-- Designed to enhance concentration without blocking user control completely
+[![Adaptive OS Demo](https://img.shields.io/badge/Watch-Demo_Video-red?style=for-the-badge&logo=youtube)](https://drive.google.com/file/d/1XCu9v4UgnHoGUtYClahF3t8pd4cWlxM0/view?usp=sharing)
 
-### Exam Mode
-- Strict supervision mode intended for examinations
-- Launches a full-screen exam application
-- Automatically closes all unauthorized windows
-- Prevents window switching and multitasking
-- Exam session ends only after submission
+---
 
-### Exit Mode
-- Restores system to normal operation
-- Clears enforcement state
-- Allows re-selection of operating modes
+## 🛠️ Installation & Setup
 
-## System Architecture
-
-AdaptiveOS operates entirely in user space and consists of the following components:
-
-- **Monitoring Engine:** Continuously observes active windows and system state
-- **Enforcement Layer:** Applies application restrictions based on the selected mode
-- **User Interface Layer:** Provides mode selection, exit controls and suggestions
-- **Exam Application Module:** Handles full-screen exam delivery and submission
-- **Machine Learning Module:** Generates focus recommendations based on user behavior
-
-## Machine Learning-Based Focus Recommendation
-
-AdaptiveOS uses a lightweight machine learning model to analyze behavioral indicators such as:
-
-- Session duration
-- Application switching frequency
-- User interaction patterns
-
-Based on these parameters, the system recommends switching to Focus Mode when sustained focus or distraction is detected. The ML component is advisory and does not enforce mode changes automatically.
-
-## Technologies Used
-
-- **Programming Language:** Python  
-- **Platform:** Linux (Ubuntu)  
-- **UI Framework:** Tkinter  
-- **Window Control:** wmctrl, xdotool  
-- **Machine Learning:** Scikit-learn  
-- **Data Handling:** Pandas  
-- **Model Persistence:** Joblib  
-- **Version Control:** Git  
-
-## Required Dependencies
-
-- Python 3.x  
-- wmctrl  
-- xdotool  
-- tkinter  
-- pandas  
-- scikit-learn  
-- joblib  
-
-Install system tools using:
-```bash
-sudo apt install wmctrl xdotool
-
-Install Python dependencies using:
+### Prerequisites
+- Python 3.x
+- `wmctrl` (for window management)
+- `tkinter` (for the UI)
 
 ```bash
-pip install pandas scikit-learn joblib
+# Install wmctrl on Linux
+sudo apt-get install wmctrl
+```
+
+### Running the Application
+Simply execute the main entry point:
+```bash
+python main.py
 ```
 
 ---
 
-## Privacy and Ethics
+## 📁 Project Structure
 
-AdaptiveOS is designed with privacy as a core principle.
-
-- No webcam access  
-- No microphone usage  
-- No screen recording  
-- No keystroke logging  
-- No content-level inspection  
-
-All enforcement is performed strictly at the operating system level using window and process control mechanisms.
+- `main.py`: The entry point for the application.
+- `backend/monitor.py`: The core engine that tracks and closes windows.
+- `ui/popup.py`: A modern Tkinter interface for mode selection.
+- `data/config.py`: Configuration file for whitelists and blacklists.
 
 ---
 
-## Limitations
+## 👥 Authors
 
-- Website-level blocking inside browsers is not supported  
-- Machine learning recommendations depend on training data quality  
-- Currently supports Linux desktop environments using X11 window managers  
-
----
-
-## Future Scope
-
-- Personalized focus thresholds per user  
-- Multiple focus levels such as Focus-Light and Focus-Strict  
-- Wayland window manager support  
-- Enhanced machine learning models for adaptive behavior analysis  
-- Integration with institutional examination platforms  
-- Administrative dashboards and analytics  
+*   **Surabhi M**
+*   **Tanisha Bhide**
 
 ---
 
-## Conclusion
-
-AdaptiveOS demonstrates how operating system concepts such as window management and access control can be combined with lightweight machine learning to provide intelligent focus assistance and secure exam supervision. The system offers an ethical, privacy-respecting alternative to conventional proctoring and productivity tools.
-
----
-
-## Authors
-
-- **Surabhi M**  
-- **Tanisha Bhide**
+*Adaptive OS - Adapting your environment to your goals.*
